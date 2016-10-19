@@ -49,13 +49,15 @@ class Photo {
     $pageData = $GLOBALS['Facebook']->api($graph_url);
     $pageData = $pageData['data'];
 
+    print_r($pageData);
+
     $i = 0;
     if (is_array($pageData))
     {
       foreach ($pageData as $pageRow)
       {
           
-          $graph_url = $pageRow['id'].'/photos';
+          $graph_url = $pageRow['id'].'/photos?fields=id,picture,link';
           $albumData = $GLOBALS['Facebook']->api($graph_url);
           $albumData = $albumData['data'];
           

@@ -2,7 +2,7 @@
 <?php
 
   require realpath(dirname($_SERVER['SCRIPT_NAME']).'/../knoopvszombies.ini.php');
-  require DOCUMENT_ROOT.'/www/module/includes.php';
+  require DOCUMENT_ROOT.'/public/module/includes.php';
 
   $GLOBALS['Photo']->GenerateFooterImageCache();
   

@@ -522,18 +522,18 @@ class Game {
     switch ($sortBy)
     {      
       case "kills":
-        $filterBy = 'zombies';
+        //$filterBy = 'zombies';
         $sortSql = "ORDER BY gx.zombie_kills DESC";
         break;
         
       case "starve_time":
         $filterBy = 'zombies';
-        $sortSql = "ORDER BY gx.zombie_feed_timer ASC";
+        $sortSql = "ORDER BY CASE WHEN gx.immortal = 1 then 1 else 0 end, gx.zombie_feed_timer ASC";
         break;
       
       case "squad":
-        $filterBy = 'in_squad';
-        $sortSql = "ORDER BY u.squad_name ASC";
+        //$filterBy = 'in_squad';
+        $sortSql = "ORDER BY CASE WHEN u.squad_name = '' then 1 else 0 end, u.squad_name ASC";
         break;
         
       case "name":
@@ -594,6 +594,7 @@ class Game {
               gx.zombie_kills, 
               gx.zombied_time, 
               gx.zombie_feed_timer,
+              gx.immortal,
               u.name, 
               u.email,
               u.fb_id, 
@@ -710,23 +711,6 @@ class Game {
     $results = $GLOBALS['Db']->GetRecords($sql);
     if (is_array($results) && count($results) > 0) {
       $zombie = $results[0]['name'];
-    }
-    
-    if (isset($GLOBALS['state']['oz_hidden']) && $GLOBALS['state']['oz_hidden']) {
-			// OZs hidden
-			$sql = "SELECT oz FROM game_xref WHERE uid='$zombie_uid' AND gid='$gid'";
-			$results = $GLOBALS['Db']->GetRecords($sql);
-			if (is_array($results) && count($results) > 0) {
-				$oz = $results[0]['oz'];
-      }
-      if ($oz) {
-				$GLOBALS['Twitter']->send("{$human} has been infected by an OZ.");
-			} else {
-				$GLOBALS['Twitter']->send("{$human} has been infected by {$zombie}");
-			}
-    } else {
-			// OZs not hidden
-			$GLOBALS['Twitter']->send("{$human} has been infected by {$zombie}");    
     }
     
     // Clear caches
@@ -1226,26 +1210,7 @@ class Game {
         {
         
           // First mark all people who did not attend an orientation as deceased
-          $GLOBALS['User']->DidNotAttendOrientation();
-        
-          // Get all the OZs for this game
-          $ozArray = $this->GetOZs($game['gid']);
-          if (is_array($ozArray))
-          {
-            $to = '';
-            foreach ($ozArray as $oz)
-            {
-              $to .= $oz['email'].',';
-            }
-          }
-          
-          // Now send them an email
-          $subject = "".UNIVERSITY." HvZ You Are An Original Zombie!";
-          $body = "Hello,\n\rYou were randomly chosen to be an Original Zombie for the {$game['name']} game! This means that you start off as a zombie and can immediately begin tagging humans.\n\rRemember, Original Zombies DO NOT have to wear their bandanna on their head for the first 24 hours of the game. You may disguise yourself as a human!\n\rGood luck hunting! If there is a problem and you cannot be an Original Zombie, please contact the moderators immediately via the HvZ Mizzou Help Line (573.833.0385)\n\r";
-   
-          $attachFooter = true;
-          $bcc = true;
-          $GLOBALS['Mail']->SimpleMail($to, $subject, $body, $attachFooter, $bcc);
+          //$GLOBALS['User']->DidNotAttendOrientation();
           
           
           // Now we need to email everyone that the game has officially begun
@@ -1297,7 +1262,7 @@ class Game {
       foreach ($allZombies as $zombie)
       {
       
-        if ($now > ($zombie['zombie_feed_timer'] + ZOMBIE_MAX_FEED_TIMER))
+        if ($now > ($zombie['zombie_feed_timer'] + ZOMBIE_MAX_FEED_TIMER) && !$zombie['immortal'])
         {
           // Zombie has starved, mark them as starved in the database, deceased them, send an email
           $GLOBALS['User']->UpdateUserGameColumn($GLOBALS['state']['gid'], $zombie['uid'], 'status', 'deceased');
@@ -1316,13 +1281,13 @@ class Game {
       }
     }
     
-    if ($to != '')
+    if (isset($to) && $to != '')
     {
       // Now send them an email
       $subject = "".UNIVERSITY." HvZ You Have Starved!";
-      $body = "Hello,\n\rBecause you have not fed on a human for 48 hours, you have starved! This means you are no longer a zombie and cannot register kills on the website. Thank you for playing! We hope you'll play again next semester.\n\r";
+      $body = "Hello,\n\rBecause you have not fed on a human for 72 hours, you have starved! This means you are no longer a zombie and cannot register kills on the website. Thank you for playing! We hope you'll play again next year.\n\r";
          
-      $GLOBALS['Mail']->SimpleMail($to, $subject, $body);
+      //$GLOBALS['Mail']->SimpleMail($to, $subject, $body);
     }
 
   }

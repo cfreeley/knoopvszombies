@@ -70,6 +70,20 @@ class Mail {
       return false;
     }
   }
+
+  /*
+  *
+  *
+  * @return bool
+  */
+  function ValidateFiveCollegeEmail($email) {
+    if (strpos($email, 'umass.edu') !== FALSE || strpos($email, 'hampshire.edu') !== FALSE || strpos($email, 'smith.edu') !== FALSE
+      || strpos($email, 'amherst.edu') !== FALSE || strpos($email, 'mtholyoke.edu') !== FALSE) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   
   /*
   *   Returns an array of email addresses matching the $type
@@ -120,6 +134,15 @@ class Mail {
       case "allusers":
         $sql = "SELECT u.email FROM user u WHERE 1";
         break;
+
+      case "ozs":
+        if ($GLOBALS['state']) {
+          $sql = "SELECT u.email FROM game_xref g_x LEFT JOIN user u ON g_x.uid = u.uid WHERE g_x.gid='{$GLOBALS['state']['gid']}' AND oz='1'";
+        } else {
+          return array();
+        }
+        break;
+
     }
     
     

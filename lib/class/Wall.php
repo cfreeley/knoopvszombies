@@ -57,7 +57,7 @@ class Wall {
     // get hidden posts
     $hidden_posts = $this->GetHiddenPosts();
       
-    while (!is_array($page_posts) || count($page_posts) < 3)
+    while (!is_array($page_posts) || count($page_posts) < 1)
     {
     
       if ($next_page == '')
@@ -80,22 +80,6 @@ class Wall {
       
         foreach ($posts as $post)
         {
-          if ($post['from']['id'] == FB_PAGE_ID)
-          {
-          
-            $is_hidden = false;
-            
-            foreach ($hidden_posts as $hidden_post)
-            {
-              if ($GLOBALS['Misc']->StringWithin($hidden_post['fb_id'], $post['id']))
-              {
-                $is_hidden = true;
-              }
-            }
-            
-            if (!$is_hidden)
-            {
-           
               // If the post container hashtag #imp, show it prominently on the homepage
               if (isset($post['message']) && $GLOBALS['Misc']->StringWithin('#imp', $post['message']))
               {
@@ -104,16 +88,14 @@ class Wall {
                 if (($last_imp_time < strtotime($post['created_time'])) && (strtotime($post['created_time']) >= ($now - (60*60*24*2))))
                 {
                   $post['message'] = str_replace('#imp', '', $post['message']);
+
                   $GLOBALS['Cache']->WriteToCache('recent_posts_imp', $post);
                   $last_imp_time = strtotime($post['created_time']);
                 }
               }
-              
+
               $page_posts[$i] = $post;
               $i++;
-            }
-            
-          }
           
         }
         

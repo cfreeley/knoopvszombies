@@ -13,7 +13,7 @@
  define('SQL_NUM_SLAVES', 0);
  define('SQL_FAIL_SLAVE_TO_MASTER', true);
  define('SQL_MASTER_HOST', DATABASE_HOSTNAME);
- define('SQL_MASTER_USER', 'web');
+ define('SQL_MASTER_USER', 'umasshvzdb');
  define('SQL_MASTER_PASS', DATABASE_PASS_FOR_WEB);
  define('SQL_MASTER_DB', DATABASE);
  define('SQL_MASTER_SOCKET', '');
