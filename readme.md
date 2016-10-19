@@ -1,4 +1,5 @@
 # Knoop vs Zombies
+## (Forked and modified for Umass Amherst)
 
 An open source [Humans vs Zombies](http://humansvszombies.org/) game engine. Find a hosted version of this engine at [http://muzombies.org](http://muzombies.org) and [http://trumanzombies.org](http://muzombies.org).
 
